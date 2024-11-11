@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="gd.js"defer type="module"></script>
+    <script src="login.js"defer type="module"></script>
+    <title>Doctor Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #3498db, #2874a6);
+        }
+
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo svg {
+            width: 80px;
+            height: 80px;
+            fill: #3498db;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .forgot-password {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .login-btn:hover {
+            background: #2980b9;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        .divider span {
+            background: white;
+            padding: 0 10px;
+            color: #666;
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .google-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        /* New styles for signup */
+        .signup-section {
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+        }
+
+        .signup-text {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .signup-btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: #2ecc71;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .signup-btn:hover {
+            background: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="logo">
+            <svg viewBox="0 0 100 100">
+                <rect x="42" y="10" width="16" height="80" rx="2"/>
+                <rect x="10" y="42" width="80" height="16" rx="2"/>
+                <path d="M30,65 Q30,80 40,85 Q60,95 70,85 Q80,75 70,65" stroke="currentColor" stroke-width="6" fill="none"/>
+                <circle cx="30" cy="65" r="5"/>
+            </svg>
+            <h1>Doctor Login</h1>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="doctor@hospital.com" required>
+                <div class="error" id="emailError">Please enter a valid email</div>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+                <div class="error" id="passwordError">Password must be at least 6 characters</div>
+            </div>
+
+            <div class="remember-forgot">
+                <label class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <span>Remember me</span>
+                </label>
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-btn">Sign in</button>
+        </form>
+
+        <!-- Divider -->
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <!-- Google Login -->
+        <button type="button" class="google-btn" id="googlelogin">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHBhdGggZmlsbD0iI0VBNDMzNSIgZD0iTTI0IDkuNWMzLjU0IDAgNi43MSAxLjIyIDkuMjEgMy42bDYuODUtNi44NUMzNS45IDIuMzggMzAuNDcgMCAyNCAwIDEyLjU3IDAgMy41IDcuMDIgMS4yIDE3LjA0bDguMDEgNi4yNEMxMS4xIDE1LjE5IDE3IDkuNSAyNCA5LjV6Ii8+PHBhdGggZmlsbD0iIzQyODVGNCIgZD0iTTQ2Ljk4IDI0LjU1YzAtMS41Ny0uMTUtMy4wOS0uMzgtNC41NUgyNHY5LjAyaDEyLjk0Yy0uNTggMi45Ni0yLjI2IDUuNDgtNC43OCA3LjE4bDcuNzMgNmM0LjUxLTQuMTggNy4wOS0xMC4zNiA3LjA5LTE3LjY1eiIvPjxwYXRoIGZpbGw9IiNGQkJDMDUiIGQ9Ik0xMC41MyAyOC41OWMtLjQ4LTEuNDUtLjc2LTIuOTktLjc2LTQuNTlzLjI3LTMuMTQuNzYtNC41OWwtOC4wMS02LjI0QzEuMTkgMTYuMzQgMCAyMC4wNSAwIDI0YzAgMy45NSAxLjE5IDcuNjYgMy4yOCAxMC44Mmw3LjI1LTYuMjN6Ii8+PHBhdGggZmlsbD0iIzM0QTg1MyIgZD0iTTI0IDQ4YzYuNDggMCAxMS45My0yLjEzIDE1Ljg5LTUuODFsLTcuNzMtNmMtMi4xNSAxLjQ1LTQuOTIgMi4zLTguMTYgMi4zLTYuOTggMC0xMi44OC01LjY4LTE0Ljk5LTEzLjI4TDEuMiAzMC45NkMzLjUgNDAuOTggMTIuNTcgNDggMjQgNDh6Ii8+PC9zdmc+" alt="Google" >
+            Continue with Google
+        </button>
+        
+            <p class="bottom-text">
+                Don't have an account? <a href="dsignup.html">Sign up</a>
+            </p>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const googleLogin = document.getElementById('googleLogin');
+            const signupBtn = document.getElementById('signupBtn');
+
+            // Email validation
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            // Form submission
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Reset errors
+                emailError.style.display = 'none';
+                passwordError.style.display = 'none';
+
+                // Validate email
+                if (!isValidEmail(emailInput.value)) {
+                    emailError.style.display = 'block';
+                    return;
+                }
+
+                // Validate password
+                if (passwordInput.value.length < 6) {
+                    passwordError.style.display = 'block';
+                    return;
+                }
+
+                // Handle login
+                try {
+                    const loginData = {
+                        email: emailInput.value,
+                        password: passwordInput.value,
+                        rememberMe: document.getElementById('rememberMe').checked
+                    };
+
+                    console.log('Login attempt:', loginData);
+                    // Add your login API call here
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                }
+            });
+
+            // Google login
+            googleLogin.addEventListener('click', function() {
+                console.log('Google login clicked');
+                // Add your Google login implementation here
+            });
+
+            // Sign up button
+            signupBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Sign up clicked');
+                // Add your signup page redirect or modal here
+                // window.location.href = '/signup.html';
+            });
+
+            // Remember me
+            const rememberedEmail = localStorage.getItem('rememberedEmail');
+            if (rememberedEmail) {
+                emailInput.value = rememberedEmail;
+                document.getElementById('rememberMe').checked = true;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="index.js" type="module"></script>
+    <title>Patient Prescriptions</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --background-light: #f8fafc;
+            --text-dark: #333;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .date-filter input {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .prescription-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .prescription-table th,
+        .prescription-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .prescription-table th {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+
+        .prescription-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .medication-list,
+        .test-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .medication-item,
+        .test-item {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 8px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .filters {
+                flex-direction: column;
+            }
+            
+            .prescription-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>My Prescriptions</h1>
+        </div>
+
+        <div class="filters">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by patient name or diagnosis...">
+            </div>
+            <div class="date-filter">
+                <input type="date" id="startDate" placeholder="Start Date">
+                <input type="date" id="endDate" placeholder="End Date">
+            </div>
+        </div>
+
+        <div id="prescriptionContainer">
+            <div class="loading">Loading prescriptions...</div>
+        </div>
+    </div>
+
+    <!-- Prescription Detail Modal -->
+    <div id="prescriptionModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Function to format date
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        // Function to create prescription table
+        function createPrescriptionTable(prescriptions) {
+            return `
+                <table class="prescription-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Patient</th>
+                            <th>Diagnosis</th>
+                            <th>Specialization</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${prescriptions.map(prescription => `
+                            <tr>
+                                <td>${formatDate(prescription.prescriptionDate)}</td>
+                                <td>
+                                    ${prescription.patientName}<br>
+                                    <small>${prescription.patientEmail}</small>
+                                </td>
+                                <td>${prescription.diagnosis}</td>
+                                <td>${prescription.specialization}</td>
+                                <td>
+                                    <button class="view-btn" onclick='viewPrescriptionDetails(${JSON.stringify(prescription).replace(/'/g, "&apos;")})'>
+                                        View Details
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Function to display prescription details in modal
+        function viewPrescriptionDetails(prescription) {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h2>Prescription Details</h2>
+                <div style="margin-top: 1rem;">
+                    <h3>Patient Information</h3>
+                    <p><strong>Name:</strong> ${prescription.patientName}</p>
+                    <p><strong>Email:</strong> ${prescription.patientEmail}</p>
+                    <p><strong>Date:</strong> ${formatDate(prescription.prescriptionDate)}</p>
+                    <p><strong>Diagnosis:</strong> ${prescription.diagnosis}</p>
+                    <p><strong>Specialization:</strong> ${prescription.specialization}</p>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <h3>Medications</h3>
+                    <ul class="medication-list">
+                        ${prescription.medications.map(med => `
+                            <li class="medication-item">
+                                <p><strong>Name:</strong> ${med.name}</p>
+                                <p><strong>Dosage:</strong> ${med.dosage}</p>
+                                <p><strong>Frequency:</strong> ${med.frequency}</p>
+                                <p><strong>Duration:</strong> ${med.duration}</p>
+                                ${med.instructions ? `<p><strong>Instructions:</strong> ${med.instructions}</p>` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+
+                ${prescription.tests && prescription.tests.length > 0 ? `
+                    <div style="margin-top: 1rem;">
+                        <h3>Tests</h3>
+                        <ul class="test-list">
+                            ${prescription.tests.map(test => `
+                                <li class="test-item">
+                                    <p><strong>Name:</strong> ${test.name}</p>
+                                    <p><strong>Type:</strong> ${test.type}</p>
+                                    ${test.instructions ? `<p><strong>Instructions:</strong> ${test.instructions}</p>` : ''}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+
+                ${prescription.additionalNotes ? `
+                    <div style="margin-top: 1rem;">
+                        <h3>Additional Notes</h3>
+                        <p>${prescription.additionalNotes}</p>
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('prescriptionModal').style.display = 'block';
+        }
+
+        // Function to close modal
+        function closeModal() {
+            document.getElementById('prescriptionModal').style.display = 'none';
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('prescriptionModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>

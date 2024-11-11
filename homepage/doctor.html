@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="patient.js" type="module"></script>
+    <title>MediJournal - Patient Management Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #0ea5e9;
+            --text-dark: #333;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #ffffff;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Add these styles to your existing CSS */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-btn {
+    padding: 0.5rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: var(--text-dark);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.2s;
+}
+
+.dropdown-content hr {
+    margin: 0;
+    border: none;
+    border-top: 1px solid #eee;
+}
+
+.dropdown-content a:hover {
+    background-color: #f8fafc;
+    color: var(--primary-color);
+}
+
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.profile-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 80vh;
+            padding-top: 60px;
+            background: linear-gradient(rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.1)),
+                        url('/api/placeholder/1920/1080') center/cover;
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-bar input {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 70%;
+            font-size: 1rem;
+        }
+
+        .search-bar button {
+            padding: 1rem 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        /* Quick Actions Section */
+        .quick-actions {
+            padding: 2rem 5%;
+            background: #f8fafc;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-card h3 {
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        /* Recent Patients Section */
+        .recent-patients {
+            padding: 2rem 5%;
+        }
+
+        .patient-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .patient-table th,
+        .patient-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .patient-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary-color);
+            color: white;
+            padding: 2rem 5%;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">
+                <i>⚕️</i>
+                MediJournal
+            </div>
+            <div class="nav-links">
+                <a href="doctor.html">Home </a>
+                <a href="/featurepage/pris.html">Patients</a>
+                <a href="#">Appointments</a>
+                <a href="#">Reports</a>
+                <div class="profile-dropdown">
+                    <button class="profile-btn">👨‍⚕️ </button>
+                    <div class="dropdown-content">
+                        <a href="#profile">My Profile</a>
+                        <a href="#settings">Settings</a>
+                        <hr>
+                        <a href="#logout">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Patient Care Made Simple</h1>
+            <p>Manage your patients, appointments, and medical records efficiently</p>
+            <div class="search-bar">
+                <input type="text" placeholder="Search patients by name or ID...">
+                <button>Search</button>
+            </div>
+        </div>
+    </section>
+
+   <!-- Quick Actions -->
+<section class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-grid">
+        <div class="action-card">
+            <i>📅</i>
+            <h3>Schedule Appointment</h3>
+            <p>Book a new appointment</p>
+        </div>
+        <div class="action-card">
+            <i>📋</i>
+            <h3>View Records</h3>
+            <p>Access patient records</p>
+        </div>
+        <div class="action-card">
+            <i>📊</i>
+            <h3>Generate Report</h3>
+            <p>Create medical reports</p>
+        </div>
+    </div>
+</section>
+
+    <!-- Recent Patients -->
+    <section class="recent-patients">
+        <h2>Recent Patients</h2>
+        <table class="patient-table">
+            <thead>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>Last Visit</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="patientTableBody">
+                <!-- Will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="#">Patient Records</a></li>
+                    <li><a href="#">Appointments</a></li>
+                    <li><a href="#">Reports</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact IT Support</a></li>
+                    <li><a href="#">Training Resources</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Email: support@medicare.com</p>
+                <p>Phone: (555) 123-4567</p>
+            </div>
+        </div>
+        <p>&copy; 2024 MediCare. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Sample patient data
+        // Populate patient table
+        const patientTableBody = document.getElementById('patientTableBody');
+        patients.forEach(patient => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${patient.id}</td>
+                <td>${patient.name}</td>
+                <td>${patient.lastVisit}</td>
+                <td>${patient.status}</td>
+                <td><button onclick="viewPatient('${patient.id}')" style="padding: 0.5rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">View</button></td>
+            `;
+            patientTableBody.appendChild(row);
+        });
+
+        function viewPatient(id) {
+            alert(`Viewing patient ${id}`);
+        }
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-bar input');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredPatients = patients.filter(patient => 
+                patient.name.toLowerCase().includes(searchTerm) || 
+                patient.id.toLowerCase().includes(searchTerm)
+            );
+            
+            patientTableBody.innerHTML = '';
+            filteredPatients.forEach(patient => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${patient.id}</td>
+                    <td>${patient.name}</td>
+                    <td>${patient.lastVisit}</td>
+                    <td>${patient.status}</td>
+                    <td><button onclick="viewPatient('${patient.id}')" style="padding: 0.5rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">View</button></td>
+                `;
+                patientTableBody.appendChild(row);
+            });
+        });
+    </script>
+</body>
+</html>

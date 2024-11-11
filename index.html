@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDIJOURNAL Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #e0f7fa, #e1bee7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .heart-icon {
+            color: #e91e63;
+            font-size: 4rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .title {
+            color: #4a148c;
+            font-size: 2.5rem;
+            margin: 1rem 0;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 280px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .card.selected {
+            border: 3px solid #7c4dff;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .anime-recommendations {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .recommendation-title {
+            color: #6a1b9a;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .anime-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .anime-tag {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #6a1b9a;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .continue-btn {
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            background: linear-gradient(to right, #7c4dff, #e91e63);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            display: none;
+        }
+
+        .continue-btn:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .cards-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <div class="heart-icon">➕</div>
+        <h1 class="title">Welcome to MediJournal</h1>
+        <p class="subtitle">Where Healthcare Meets Anime Magic ✨</p>
+    </div>
+
+    <!-- Selection Cards -->
+    <div class="cards-container">
+        <div class="card" data-type="patient">
+            <div class="card-icon">👤</div>
+            <h2 class="card-title">I'm a Patient</h2>
+            <p class="card-text">Find care with the comfort of your favorite anime characters</p>
+        </div>
+
+        <div class="card" data-type="doctor">
+            <div class="card-icon">👨‍⚕️</div>
+            <h2 class="card-title">I'm a Doctor</h2>
+            <p class="card-text">Join our network of healthcare heroes</p>
+        </div>
+    </div>
+
+    <!-- Continue Button -->
+    <button class="continue-btn">Continue</button>
+
+    <script>
+       // Handle card selection
+let selectedType = null;
+const cards = document.querySelectorAll('.card');
+const continueBtn = document.querySelector('.continue-btn');
+
+cards.forEach(card => {
+    card.addEventListener('click', () => {
+        // Remove selected class from all cards
+        cards.forEach(c => c.classList.remove('selected'));
+        
+        // Add selected class to clicked card
+        card.classList.add('selected');
+        
+        // Update selected type
+        selectedType = card.dataset.type;
+        
+        // Show and update continue button
+        continueBtn.style.display = 'block';
+        continueBtn.textContent = `Continue as ${selectedType === 'doctor' ? 'Doctor' : 'Patient'}`;
+    });
+});
+
+// Handle continue button click with navigation logic
+continueBtn.addEventListener('click', () => {
+    if (selectedType === 'doctor') {
+        window.location.href = '/loginpage/doctor.html'; // Path to doctor HTML file
+    } else if (selectedType === 'patient') {
+        window.location.href = '/loginpage/patient.html'; // Path to patient HTML file
+    }
+});
+
+// Add floating animation to heart
+const heart = document.querySelector('.heart-icon');
+let position = 0;
+let direction = 1;
+
+function floatHeart() {
+    position += (0.3 * direction);
+    
+    if (position >= 5) direction = -1;
+    if (position <= 0) direction = 1;
+    
+    heart.style.transform = `translateY(${position}px)`;
+    requestAnimationFrame(floatHeart);
+}
+
+floatHeart();
+
+        // type="module"
+//   // Import the functions you need from the SDKs you need
+//   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+//   import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+//   // TODO: Add SDKs for Firebase products that you want to use
+//   // https://firebase.google.com/docs/web/setup#available-libraries
+
+//   // Your web app's Firebase configuration
+//   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+//   const firebaseConfig = {
+//     apiKey: "AIzaSyA2_5gzNjNdj88SAmc2psHsYVNTMEr6WFA",
+//     authDomain: "hack-fe8c7.firebaseapp.com",
+//     projectId: "hack-fe8c7",
+//     storageBucket: "hack-fe8c7.firebasestorage.app",
+//     messagingSenderId: "58824388156",
+//     appId: "1:58824388156:web:56d809896a20091a319d39",
+//     measurementId: "G-C0W5L2EX64"
+//   };
+
+//   // Initialize Firebase
+//   const app = initializeApp(firebaseConfig);
+//   const analytics = getAnalytics(app);
+    </script>
+</body>
+</html>

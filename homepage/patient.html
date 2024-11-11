@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediJournal - Patient Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #0ea5e9;
+            --text-dark: #333;
+            --text-light: #666;
+            --background-light: #f8fafc;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #ffffff;
+            padding: 1rem 5%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-btn {
+            padding: 0.5rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .profile-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            padding: 12px 16px;
+            display: block;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--background-light);
+            color: var(--primary-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 80px;
+            min-height: 100vh;
+            background: var(--background-light);
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: white;
+            padding: 2rem 5%;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .welcome-text {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .welcome-text h1 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            padding: 2rem 5%;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .action-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Upcoming Appointments */
+        .appointments {
+            padding: 2rem 5%;
+            background: white;
+        }
+
+        .appointments-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .appointment-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--background-light);
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .appointment-card:hover {
+            transform: translateX(10px);
+        }
+
+        .appointment-info {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .appointment-actions button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+        .reschedule-btn {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Notifications Section */
+        .notifications {
+            padding: 2rem 5%;
+        }
+
+        .notification-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .notification-card.unread {
+            background: #f0f9ff;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary-color);
+            color: white;
+            padding: 2rem 5%;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .appointment-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .appointment-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .appointment-actions {
+                margin-top: 1rem;
+            }
+        }
+        /* chatbot CSS section */
+.chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.chat-icon {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
+
+.chat-icon:hover {
+    transform: scale(1.1);
+}
+
+.chat-window {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-window.active {
+    display: flex;
+}
+
+.chat-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-chat {
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.message {
+    margin-bottom: 1rem;
+    max-width: 80%;
+}
+
+.bot-message {
+    background: #f0f9ff;
+    padding: 0.8rem;
+    border-radius: 12px 12px 12px 0;
+    margin-right: auto;
+}
+
+.user-message {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.8rem;
+    border-radius: 12px 12px 0 12px;
+    margin-left: auto;
+}
+
+.chat-input {
+    padding: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+}
+
+.chat-input button {
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background: var(--secondary-color);
+}
+/* Add these styles for the popup */
+.chat-popup {
+    position: fixed;
+    bottom: 90px;
+    right: 90px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    max-width: 250px;
+    z-index: 1000;
+    animation: slideIn 0.5s ease-out;
+    display: none;
+}
+
+.chat-popup::after {
+    content: '';
+    position: absolute;
+    bottom: 15px;
+    right: -10px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid white;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.chat-popup-close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+    color: #666;
+}
+
+.chat-popup-message {
+    margin-right: 15px;
+}
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">
+                <i>⚕️</i>
+                MediJournal
+            </div>
+            <div class="nav-links">
+                <a href="#">Home</a>
+                <a href="#">Appointments</a>
+                <a href="#">Medical Records</a>
+                <a href="#">Messages</a>
+                <div class="profile-dropdown">
+                    <button class="profile-btn">
+                        👤 
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="#profile">My Profile</a>
+                        <a href="#settings">Settings</a>
+                        <a href="#medical-history">Medical History</a>
+                        <a href="#logout" style="color: #ef4444;">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="welcome-text">
+                <h1>Welcome back, John</h1>
+                <p>Your next appointment is on Monday, March 15th at 10:00 AM with Dr. Smith</p>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <div class="actions-grid">
+                <a href="/featurepage/app.html" style="text-decoration: none;">
+                <div class="action-card">
+                    <div class="action-icon">📅</div>
+                    <h3>Book Appointment</h3>
+                    <p>Schedule a new appointment with your doctor</p>
+                </div>
+                </a>
+                <a href="/featurepage/patientpris.html" style="text-decoration: none;">
+                    <div class="action-card">
+                        <div class="action-icon">💊</div>
+                        <h3>Prescriptions</h3>
+                        <p>View and manage your prescriptions</p>
+                    </div>
+                </a>
+                <a href="/featurepage/test.html" style="text-decoration: none;">
+                <div class="action-card">
+                    <div class="action-icon">📋</div>
+                    <h3>Test Results</h3>
+                    <p>Access your latest test results</p>
+                </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Upcoming Appointments -->
+        <section class="appointments">
+            <div class="appointments-container">
+                <h2>Upcoming Appointments</h2>
+                <div class="appointment-card">
+                    <div class="appointment-info">
+                        <div class="doctor-info">
+                            <h3>Dr. Sarah Smith</h3>
+                            <p>General Physician</p>
+                        </div>
+                        <div class="appointment-time">
+                            <p>Monday, March 15th</p>
+                            <p>10:00 AM</p>
+                        </div>
+                    </div>
+                    <div class="appointment-actions">
+                        <button class="reschedule-btn">Reschedule</button>
+                        <button class="cancel-btn">Cancel</button>
+                    </div>
+                </div>
+                <!-- More appointment cards -->
+            </div>
+        </section>
+
+        <!-- Notifications -->
+        <section class="notifications">
+            <h2>Recent Updates</h2>
+            <div class="notification-card unread">
+                <h3>Test Results Available</h3>
+                <p>Your blood test results from March 10th are now available.</p>
+                <small>2 hours ago</small>
+            </div>
+            <div class="notification-card">
+                <h3>Prescription Renewed</h3>
+                <p>Dr. Smith has renewed your prescription for Medication X.</p>
+                <small>1 day ago</small>
+            </div>
+        </section>
+    </main>
+<!-- Chatbot -->
+<div class="chatbot-container">
+    <div class="chat-icon" onclick="toggleChat()">
+        💬
+    </div>
+    <div class="chat-window">
+        <div class="chat-header">
+            <h3>Healthcare Assistant</h3>
+            <span class="close-chat" onclick="toggleChat()">×</span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                Hello! How can I help you today?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>
+<!-- Chat Popup -->
+<div class="chat-popup" id="chatPopup">
+    <span class="chat-popup-close" onclick="closePopup()">×</span>
+    <div class="chat-popup-message">
+        👋 How are you doing today? Need any medical assistance?
+    </div>
+</div>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Find a Doctor</a></li>
+                    <li><a href="#">Medical Records</a></li>
+                    <li><a href="#">Payment History</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQs</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Emergency</h3>
+                <p>Emergency Hotline: 911</p>
+                <p>24/7 Nurse Line: (555) 123-4567</p>
+            </div>
+        </div>
+        <p>&copy; 2024 MediJournal. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Handle appointment actions
+        document.querySelectorAll('.reschedule-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                alert('Opening reschedule interface...');
+            });
+        });
+
+        document.querySelectorAll('.cancel-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                if(confirm('Are you sure you want to cancel this appointment?')) {
+                    alert('Appointment cancelled');
+                }
+            });
+        });
+
+        // Handle notifications
+        document.querySelectorAll('.notification-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.remove('unread');
+            });
+        });
+
+        // Handle logout
+        document.querySelector('a[href="#logout"]').addEventListener('click', (e) => {
+            e.preventDefault();
+            if(confirm('Are you sure you want to logout?')) {
+                window.location.href = 'login.html';
+            }
+        });
+        // Chatbot functionality
+        // Initialize chat when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeChat();
+});
+
+function initializeChat() {
+    // Add event listeners
+    const sendButton = document.querySelector('.chat-input button');
+    const userInput = document.querySelector('#userInput');
+    
+    if (sendButton) {
+        sendButton.addEventListener('click', sendMessage);
+    }
+    
+    if (userInput) {
+        userInput.addEventListener('keypress', handleKeyPress);
+    }
+    
+    // Show welcome popup after delay
+    setTimeout(showPopup, 2000);
+}
+
+function showPopup() {
+    const popup = document.getElementById('chatPopup');
+    if (popup) {
+        popup.style.display = 'block';
+        
+        // Auto-hide popup after 8 seconds
+        setTimeout(() => {
+            if (popup.style.display === 'block') {
+                closePopup();
+            }
+        }, 8000);
+    }
+}
+
+function closePopup() {
+    const popup = document.getElementById('chatPopup');
+    if (popup) {
+        popup.style.display = 'none';
+    }
+}
+
+function toggleChat() {
+    const chatWindow = document.querySelector('.chat-window');
+    chatWindow.classList.toggle('active');
+    if (chatWindow.classList.contains('active')) {
+        document.querySelector('#userInput').focus();
+        closePopup();
+    }
+}
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
+
+function addMessage(type, content) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', `${type}-message`);
+    messageDiv.textContent = content;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function sendMessage() {
+    const userInput = document.getElementById('userInput');
+    const message = userInput.value.trim();
+    
+    if (message) {
+        // Add user message to chat
+        addMessage('user', message);
+        
+        // Clear input field
+        userInput.value = '';
+        
+        // Send message to server and get response
+        fetchBotResponse(message)
+            .then(botResponse => {
+                setTimeout(() => {
+                    addMessage('bot', botResponse);
+                }, 500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessage('bot', 'Sorry, I encountered an error. Please try again.');
+            });
+    }
+}
+
+async function fetchBotResponse(userInput) {
+    // First try to get response from predefined patterns
+    const response = generateLocalResponse(userInput);
+    if (response) {
+        return response;
+    }
+    
+    // If no local match, try server
+    try {
+        const response = await fetch('/getBotResponse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userInput: userInput })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json();
+        return data.response;
+    } catch (error) {
+        console.error('Error fetching bot response:', error);
+        // Fallback to local response if server fails
+        return "I'm having trouble connecting to the server. Please try again later.";
+    }
+}
+
+function generateLocalResponse(userMessage) {
+    const responses = {
+        'hello': "Hello! How can I assist you with your healthcare needs today?",
+        'hi': "Hi there! How can I help you with your medical care?",
+        'hey': "Hey! What can I do for you today?",
+        'appointment': 'You can book an appointment using the "Book Appointment" option in the quick actions section.',
+        'prescription': 'You can view your prescriptions in the "Prescriptions" section. Need help finding something specific?',
+        'test': 'Your test results can be found in the "Test Results" section. The latest results will be shown first.',
+        'doctor': 'You can message your doctor using the "Message Doctor" option. Would you like to do that now?',
+        'emergency': 'If this is a medical emergency, please call 911 immediately. Our 24/7 nurse line is also available at (555) 123-4567.',
+        'feeling': "I'm sorry you're not feeling well. Would you like to schedule an appointment with your doctor?",
+        'sick': "I understand you're not feeling well. Would you like to see available appointment times with your doctor?",
+        'help': "I'm here to help! What kind of assistance do you need? I can help with appointments, prescriptions, test results, or connecting you with your doctor.",
+        'headache': "For a headache, you can try taking acetaminophen or ibuprofen. Drink plenty of water and rest. If it persists, see your doctor.",
+        'fever': "If you're running a fever, take paracetamol or ibuprofen to reduce it. Make sure you're drinking enough fluids to stay hydrated. If the fever lasts more than a couple of days, consult a doctor.",
+        'cold': "For a cold, rest, stay hydrated, and consider using decongestants like pseudoephedrine. If symptoms last for more than a week, consider seeing a doctor.",
+        'cough': "A cough can be treated with over-the-counter cough syrups or lozenges. If the cough lasts more than a week or is accompanied by a fever, consult your doctor.",
+        'sore throat': "For a sore throat, try lozenges or warm salt water gargles. You can also take paracetamol for pain relief. If it doesn’t improve in a few days, consult a doctor.",
+        'stomach pain': "For mild stomach pain, consider taking an over-the-counter antacid or ibuprofen. If the pain is severe or persists, it's important to consult a doctor.",
+        'diarrhea': "For diarrhea, you can take loperamide or use rehydration salts to stay hydrated. If it continues for more than 2 days or is accompanied by a fever, please see a doctor.",
+        'nausea': "For nausea, try ginger tea or over-the-counter anti-nausea medications like meclizine. If the nausea persists, see a healthcare provider.",
+        'back pain': "For mild back pain, use pain relievers like ibuprofen or acetaminophen and apply heat or ice. If it continues for more than a few days, consider consulting a doctor.",
+        'insomnia': "For insomnia, you can try over-the-counter melatonin supplements or herbal teas like chamomile. If sleep problems persist, consider seeing a sleep specialist.",
+        'muscle cramps': "For muscle cramps, stay hydrated, stretch gently, and consider taking magnesium or potassium supplements. If cramps are frequent, consult a doctor.",
+        'skin rash': "For skin rashes, hydrocortisone cream or antihistamines may help reduce irritation. If the rash spreads or worsens, please see a doctor.",
+        'constipation': "For constipation, you can try increasing your fiber intake or use over-the-counter laxatives like polyethylene glycol. Drink plenty of water and consult a doctor if it becomes a regular issue.",
+        'fatigue': "For fatigue, make sure you're getting enough sleep, eating well, and staying hydrated. If fatigue persists despite lifestyle changes, it may be worth consulting a doctor.",
+        'allergies': "For allergies, antihistamines like loratadine or cetirizine can help. If symptoms persist, see a doctor for personalized advice.",
+        'acne': "For acne, try using over-the-counter treatments with benzoyl peroxide or salicylic acid. Keep your face clean and avoid touching it frequently. If acne persists, a dermatologist can help.",
+        'high blood pressure': "If you have high blood pressure, it's important to manage it with lifestyle changes like reducing salt intake, exercising regularly, and taking prescribed medications. Consult your doctor for a plan.",
+        'headache': "For headaches, try taking paracetamol or ibuprofen. Drink plenty of water and take rest. If the headache is severe or frequent, consider seeing a doctor.",
+        'heartburn': "For heartburn, try over-the-counter antacids like Tums or omeprazole. Avoid trigger foods, and if it continues, consult a doctor for further treatment options.",
+        'toothache': "For a toothache, over-the-counter pain relievers like ibuprofen may help. You can also apply clove oil to the affected area. Make sure to consult a dentist if the pain continues.",
+        'dizziness': "For dizziness, try resting and drinking water. If you feel faint or the dizziness persists, please consult a doctor to rule out any underlying conditions.",
+        'nausea': "For nausea, you can try ginger tea or anti-nausea medication like ondansetron. If symptoms persist or worsen, consult a healthcare provider.",
+        'muscle pain': "For muscle pain, over-the-counter pain relievers like ibuprofen or applying heat or ice may help. If pain persists, consult a doctor.",
+        'earache': "For an earache, over-the-counter pain relievers like acetaminophen may help. If the pain continues or if there is fluid drainage, consult an ENT specialist.",
+        'flu': "For flu symptoms, stay hydrated, rest, and take paracetamol to manage fever and aches. If symptoms are severe or persist, consult your doctor."
+    };
+    
+    const userMessageLower = userMessage.toLowerCase();
+    for (let keyword in responses) {
+        if (userMessageLower.includes(keyword)) {
+            return responses[keyword];
+        }
+    }
+
+    return null; // No match found
+}
+
+
+// Show popup after a delay when page loads
+window.addEventListener('load', () => {
+    setTimeout(showPopup, 2000); // Shows popup after 2 seconds
+});
+
+function showPopup() {
+    const popup = document.getElementById('chatPopup');
+    popup.style.display = 'block';
+    
+    // Automatically hide popup after 8 seconds
+    setTimeout(() => {
+        if (popup.style.display === 'block') {
+            closePopup();
+        }
+    }, 8000);
+}
+
+function closePopup() {
+    const popup = document.getElementById('chatPopup');
+    popup.style.display = 'none';
+}
+
+// Close popup when chat is opened
+function toggleChat() {
+    const chatWindow = document.querySelector('.chat-window');
+    chatWindow.classList.toggle('active');
+    if (chatWindow.classList.contains('active')) {
+        document.querySelector('#userInput').focus();
+        closePopup(); // Close popup when chat is opened
+    }
+}
+
+// Modify the existing sendMessage function to handle the initial greeting
+function sendMessage() {
+    const input = document.querySelector('#userInput');
+    const message = input.value.trim();
+    
+    if (message) {
+        addMessage('user', message);
+        if (message.toLowerCase().includes('how are you')) {
+            setTimeout(() => {
+                addMessage('bot', "I'm doing great, thank you! How can I assist you with your healthcare needs today?");
+            }, 500);
+        } else {
+            generateResponse(message);
+        }
+        input.value = '';
+    }
+}
+
+// Add to your existing generateResponse function
+function generateResponse(userMessage) {
+    const responses = {
+        'hello': "Hello! How can I assist you with your healthcare needs today?",
+        'hi': "Hi there! How can I help you with your medical care?",
+        'hey': "Hey! What can I do for you today?",
+        'appointment': 'You can book an appointment using the "Book Appointment" option in the quick actions section.',
+        'prescription': 'You can view your prescriptions in the "Prescriptions" section. Need help finding something specific?',
+        'test': 'Your test results can be found in the "Test Results" section. The latest results will be shown first.',
+        'doctor': 'You can message your doctor using the "Message Doctor" option. Would you like to do that now?',
+        'emergency': 'If this is a medical emergency, please call 911 immediately. Our 24/7 nurse line is also available at (555) 123-4567.',
+        'feeling': "I'm sorry you're not feeling well. Would you like to schedule an appointment with your doctor?",
+        'sick': "I understand you're not feeling well. Would you like to see available appointment times with your doctor?",
+        'help': "I'm here to help! What kind of assistance do you need? I can help with appointments, prescriptions, test results, or connecting you with your doctor.",
+        'headache': "For a headache, you can try taking acetaminophen or ibuprofen. Drink plenty of water and rest. If it persists, see your doctor.",
+        'fever': "If you're running a fever, take paracetamol or ibuprofen to reduce it. Make sure you're drinking enough fluids to stay hydrated. If the fever lasts more than a couple of days, consult a doctor.",
+        'cold': "For a cold, rest, stay hydrated, and consider using decongestants like pseudoephedrine. If symptoms last for more than a week, consider seeing a doctor.",
+        'cough': "A cough can be treated with over-the-counter cough syrups or lozenges. If the cough lasts more than a week or is accompanied by a fever, consult your doctor.",
+        'sore throat': "For a sore throat, try lozenges or warm salt water gargles. You can also take paracetamol for pain relief. If it doesn’t improve in a few days, consult a doctor.",
+        'stomach pain': "For mild stomach pain, consider taking an over-the-counter antacid or ibuprofen. If the pain is severe or persists, it's important to consult a doctor.",
+        'diarrhea': "For diarrhea, you can take loperamide or use rehydration salts to stay hydrated. If it continues for more than 2 days or is accompanied by a fever, please see a doctor.",
+        'nausea': "For nausea, try ginger tea or over-the-counter anti-nausea medications like meclizine. If the nausea persists, see a healthcare provider.",
+        'back pain': "For mild back pain, use pain relievers like ibuprofen or acetaminophen and apply heat or ice. If it continues for more than a few days, consider consulting a doctor.",
+        'insomnia': "For insomnia, you can try over-the-counter melatonin supplements or herbal teas like chamomile. If sleep problems persist, consider seeing a sleep specialist.",
+        'muscle cramps': "For muscle cramps, stay hydrated, stretch gently, and consider taking magnesium or potassium supplements. If cramps are frequent, consult a doctor.",
+        'skin rash': "For skin rashes, hydrocortisone cream or antihistamines may help reduce irritation. If the rash spreads or worsens, please see a doctor.",
+        'constipation': "For constipation, you can try increasing your fiber intake or use over-the-counter laxatives like polyethylene glycol. Drink plenty of water and consult a doctor if it becomes a regular issue.",
+        'fatigue': "For fatigue, make sure you're getting enough sleep, eating well, and staying hydrated. If fatigue persists despite lifestyle changes, it may be worth consulting a doctor.",
+        'allergies': "For allergies, antihistamines like loratadine or cetirizine can help. If symptoms persist, see a doctor for personalized advice.",
+        'acne': "For acne, try using over-the-counter treatments with benzoyl peroxide or salicylic acid. Keep your face clean and avoid touching it frequently. If acne persists, a dermatologist can help.",
+        'high blood pressure': "If you have high blood pressure, it's important to manage it with lifestyle changes like reducing salt intake, exercising regularly, and taking prescribed medications. Consult your doctor for a plan.",
+        'headache': "For headaches, try taking paracetamol or ibuprofen. Drink plenty of water and take rest. If the headache is severe or frequent, consider seeing a doctor.",
+        'heartburn': "For heartburn, try over-the-counter antacids like Tums or omeprazole. Avoid trigger foods, and if it continues, consult a doctor for further treatment options.",
+        'toothache': "For a toothache, over-the-counter pain relievers like ibuprofen may help. You can also apply clove oil to the affected area. Make sure to consult a dentist if the pain continues.",
+        'dizziness': "For dizziness, try resting and drinking water. If you feel faint or the dizziness persists, please consult a doctor to rule out any underlying conditions.",
+        'nausea': "For nausea, you can try ginger tea or anti-nausea medication like ondansetron. If symptoms persist or worsen, consult a healthcare provider.",
+        'muscle pain': "For muscle pain, over-the-counter pain relievers like ibuprofen or applying heat or ice may help. If pain persists, consult a doctor.",
+        'earache': "For an earache, over-the-counter pain relievers like acetaminophen may help. If the pain continues or if there is fluid drainage, consult an ENT specialist.",
+        'flu': "For flu symptoms, stay hydrated, rest, and take paracetamol to manage fever and aches. If symptoms are severe or persist, consult your doctor."
+    };
+
+    setTimeout(() => {
+        const userMessageLower = userMessage.toLowerCase();
+        let botResponse = 'I\'m not sure about that. Can you please rephrase your question?';
+        
+        for (let keyword in responses) {
+            if (userMessageLower.includes(keyword)) {
+                botResponse = responses[keyword];
+                break;
+            }
+        }
+
+        addMessage('bot', botResponse);
+    }, 500);
+}
+    </script>
+</body>
+</html>
